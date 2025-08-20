@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:wassup/pages/home/home.dart';
 import 'package:wassup/pages/landing.dart';
-import 'package:wassup/pages/profile/login.dart';
+import 'package:wassup/pages/auth/login.dart';
+import 'package:wassup/pages/auth/register.dart';
 
 
 void main() async {
@@ -24,7 +26,9 @@ class MainApp extends StatelessWidget {
      initialRoute: '/',
      routes: {
        '/': (context) => const Landing(),
-       '/getStarted': (context) =>  Login() // Example route for navigation
+       '/getStarted': (context) =>  Register(), // Example route for navigation
+       '/login': (context) => Login(),
+       '/home' : (context) => const Home(),
      },
     );
   
