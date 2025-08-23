@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Login extends StatelessWidget {
    Login({super.key});
@@ -8,13 +9,35 @@ class Login extends StatelessWidget {
   String _email= '';
   String _password= '';
 
-  void _validateUser() {
-    if (_formKey.currentState!.validate()) {
-      // Process the login
-      print("Form is valid, proceed with login");
-      print("Email: $_email");
-      print("Password: $_password");
+  void _validateUser(BuildContext context) async{
+   if(_formKey.currentState!.validate()){
+    _formKey.currentState!.save();
+    //print("Email: $_email, Password: $_password");
+    try{
+      final supabase = Supabase.instance.client;
+      final response = await supabase.auth.signInWithPassword(
+        email: _email,
+        password: _password,
+      );
+      if (response.user != null && response.session != null) {
+        // Login successful, navigate to home page
+        Navigator.pushNamed(context, '/home');
+      } else {
+        // Show error message for invalid credentials
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Invalid email or password")),
+        );
+      }
+      
+    }catch(error){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Login failed: $error")),
+      );
+
     }
+    
+
+   }
   }
 
   @override
@@ -140,7 +163,10 @@ class Login extends StatelessWidget {
                
               padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 24.0),
               ),
-              onPressed: _validateUser,
+              onPressed: (){
+                _validateUser(context);
+                 
+              },
               child: Text("Login", style: TextStyle(color: Colors.yellow, fontSize: 16)),
             ),
             const SizedBox(height: 20),

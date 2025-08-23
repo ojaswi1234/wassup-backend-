@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Register extends StatelessWidget {
    Register({super.key});
@@ -8,12 +9,26 @@ class Register extends StatelessWidget {
   String _email= '';
   String _password= '';
 
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      // Process the login
-      print("Form is valid, proceed with login");
-      print("Email: $_email");
-      print("Password: $_password");
+  void _submitForm(BuildContext context) async {
+    if(_formKey.currentState!.validate()){
+      _formKey.currentState!.save();
+      try{
+        final supabase = Supabase.instance.client;
+        final response = await supabase.auth.signUp(
+          email: _email,
+          password: _password,
+        );
+        
+        if (response.user != null && response.session != null) {
+          // Registration successful, navigate to home page
+          Navigator.pushNamed(context, '/home');
+         
+        }
+      } catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Registration failed: $error")),
+        );
+      }
     }
   }
 
@@ -140,7 +155,7 @@ class Register extends StatelessWidget {
                 backgroundColor: Colors.transparent,
                 padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 24.0),
               ),
-              onPressed: _submitForm,
+              onPressed: () => _submitForm(context),
               child: Text("Register", style: TextStyle(color: Colors.yellow, fontSize: 16.0)),
             ),
             const SizedBox(height: 20),
