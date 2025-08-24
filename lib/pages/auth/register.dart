@@ -8,6 +8,7 @@ class Register extends StatelessWidget {
 
   String _email= '';
   String _password= '';
+  final width = WidgetsBinding.instance.window.physicalSize.width / WidgetsBinding.instance.window.devicePixelRatio;
 
   void _submitForm(BuildContext context) async {
     if(_formKey.currentState!.validate()){
@@ -163,12 +164,25 @@ class Register extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.transparent,
                 shadowColor: Colors.transparent,
-                textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                textStyle: TextStyle(fontSize: (width > 600) ? 18 : 12, fontWeight: FontWeight.bold),
               ),
               onPressed: () {
                 Navigator.of(context).pushReplacementNamed('/login');              },
               child: Text("Already have an account? Click here to login", style: TextStyle(color: Colors.white)),
             ),
+             const SizedBox(height: 20),
+
+          MaterialButton(onPressed:  () {
+            Navigator.of(context).pushReplacementNamed('/registerPhone');
+          },
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+          
+          child: Text("Wanna Use Phone Number ??", style: TextStyle(color: Colors.black, fontSize: 16),),
+          )
           ]
           )
       ),

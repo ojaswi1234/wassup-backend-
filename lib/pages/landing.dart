@@ -33,7 +33,7 @@ class Landing extends StatelessWidget {
           const SizedBox(height: 20),
           const Text("Welcome to ChatX", style: TextStyle(color: Colors.white, fontFamily: 'EduNSWACTCursive', fontSize: 35, fontWeight: FontWeight.bold, decoration: TextDecoration.none)),
          const SizedBox(height: 30),
-          const Text("A place to connect with friends", style: TextStyle(color: Colors.white, fontSize: 12, decoration: TextDecoration.none)),
+          const Text("A place to connect with friends", style: TextStyle(color: Colors.white, fontSize: 13, decoration: TextDecoration.none)),
           const SizedBox(height: 30),
           ElevatedButton(
             onPressed: () {

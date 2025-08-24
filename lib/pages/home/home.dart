@@ -1,19 +1,211 @@
-import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
 
-class Home extends StatelessWidget {
-  Home({super.key});
+// 1. Convert to a StatefulWidget to manage the state of the contacts list
+class Home extends StatefulWidget {
+  const Home({super.key});
 
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _searchController = TextEditingController();
+  
+  // 2. Create a list to hold the contacts in the state
+  List<Contact> _contacts = [];
+  bool _isLoading = false; // To show a loading indicator
 
-  dynamic count = 1;
+  // 3. Create a method within the state to fetch contacts
+  Future<void> _fetchContacts() async {
+    // Request permission first
+    if (!await FlutterContacts.requestPermission()) {
+      print("Permission Denied");
+      // Optionally, show a snackbar to the user
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Permission denied to access contacts.')),
+      );
+      return;
+    }
+
+    // Set loading state and fetch contacts
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final contacts = await FlutterContacts.getContacts(
+        withProperties: true,
+        withPhoto: true,
+      );
+      setState(() {
+        _contacts = contacts;
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  // 4. Show the dialog with the fetched contacts
+  void _showContactFlowDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // Use StatefulBuilder to allow the dialog's content to be updated.
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+
+              backgroundColor: Colors.white54,
+              
+              title: Text(
+                _contacts.isEmpty && !_isLoading 
+                    ? "Contacts Permission" 
+                    : 'Choose Contact to Chat With',
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              content: SizedBox(
+                width: double.maxFinite,
+                // Conditionally show content based on loading and contacts state
+                child: _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _contacts.isNotEmpty
+                        ? 
+                           
+                            ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: _contacts.length,
+                            itemBuilder: (context, index) {
+                              final contact = _contacts[index];
+                              return ListTile(
+                                title: Text(contact.displayName),
+                                subtitle: Text(contact.phones.isNotEmpty
+                                    ? contact.phones.first.number
+                                    : 'No phone number'),
+                                onTap: () {
+                                  print('Selected: ${contact.displayName}');
+                                  Navigator.of(context).pop();
+                                },
+                              );
+                            },
+                          )
+                          
+                        : const Text(
+                            "To find friends to chat with, this app needs access to your contacts."
+                            ),
+              ),
+              actions: [
+                Form(
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      hintText: 'Search Name/Number.....',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.search),
+                    ),
+                    controller: _searchController,
+                    onChanged: (value) {
+                      // Implement search functionality if needed
+                    },
+                  ),
+                )
+                ,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                TextButton(
+                  style: TextButton.styleFrom(
+                   alignment: Alignment.centerLeft
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("Close"),
+                
+              ),
+              TextButton(
+                  style: TextButton.styleFrom(
+                   alignment: Alignment.centerRight
+                  ),
+                  onPressed: () {
+                   
+                  },
+                  child: const Text("Search"),
+            )]),
+                // Show "Continue" only if contacts haven't been fetched yet
+                if (_contacts.isEmpty)
+                  TextButton(
+                    onPressed: () async {
+                      // Use the dialog's own setState to update its UI
+                      setState(() {
+                        _isLoading = true;
+                      });
+
+                      // Fetch contacts using the existing method
+                      await _fetchContacts();
+
+                      // Update the dialog again with the fetched contacts
+                      setState(() {
+                        _isLoading = false;
+                      });
+                    },
+                    child: const Text("Continue"),
+                  ),
+              ],
+            );
+          },
+        );
+      },
+    ).then((_) {
+      // Reset state when the dialog is closed
+      setState(() {
+        _contacts = [];
+        _isLoading = false;
+      });
+    });
+  }
+
+  void _showPermissionExplanationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Contacts Permission"),
+          content: const Text(
+              "To find friends to chat with, this app needs access to your contacts."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop(); // Close the explanation dialog
+                // Now, proceed with fetching contacts, which will trigger the system permission prompt
+                await _fetchContacts();
+                if (mounted) {
+                  _showContactFlowDialog();
+                }
+              },
+              child: const Text("Continue"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text(
+        title: const Text(
           'ChatX',
           style: TextStyle(
             color: Colors.white,
@@ -67,10 +259,8 @@ class Home extends StatelessWidget {
             end: Alignment.topLeft,
           ),
         ),
-        // The main fix is here: using a Stack
         child: Stack(
           children: [
-            // This Column holds your primary content (search bar and list)
             Column(
               children: [
                 Padding(
@@ -91,22 +281,18 @@ class Home extends StatelessWidget {
                         prefixIcon: const Icon(
                           Icons.search,
                           color: Colors.greenAccent,
-                          
                         ),
                         filled: true,
                         fillColor: const Color.fromARGB(255, 12, 20, 23),
                         contentPadding: const EdgeInsets.symmetric(
                             horizontal: 30, vertical: 15),
-                      
                       ),
                       controller: _searchController,
                     ),
                   ),
                 ),
-                const SizedBox(height: 10), // Add some space between search bar and list
-
+                const SizedBox(height: 10),
                 Expanded(
-                  // Wrap ListView in Expanded to prevent layout overflow errors
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30),
                     child: ListView(
@@ -116,71 +302,54 @@ class Home extends StatelessWidget {
                             color: Colors.black.withOpacity(0.5),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                      child: ListTile(
-                       
-                        
-                       
-                        title: Text('My Number', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                        leading: CircleAvatar(
-                          backgroundColor: Colors.black,
-                          child: Text(
-                            'M',
-                            style: TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold),
-                          
+                          child: ListTile(
+                            title: const Text('Alex',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold)),
+                            leading: const CircleAvatar(
+                              backgroundColor: Colors.black,
+                              child: Text(
+                                'A',
+                                style: TextStyle(
+                                    color: Colors.greenAccent,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            trailing: const CircleAvatar(
+                              backgroundColor: Colors.greenAccent,
+                              radius: 12,
+                              child: Center(
+                                  child: Text(
+                                '1',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12),
+                              )),
+                            ),
+                            subtitle: const Text('Hey There',
+                                style: TextStyle(color: Colors.white54)),
+                            onTap: () {
+                              Navigator.pushNamed(context, '/chat');
+                            },
                           ),
-                        ),
-                        trailing: CircleAvatar(
-                          backgroundColor: Colors.greenAccent,
-                          radius: 12,
-                          child:
-                          Center( 
-                           child:Text(
-                            count.toString(),
-                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12),
-                          )),
-                        ),
-
-                        subtitle: Text('Hey There', style: TextStyle(color: Colors.white54)),
-                        onTap: () {
-                          Navigator.pushNamed(context, '/chat');
-                        },
-                        
-                      
-                      ),
-                      )
-                      // Add more ListTiles for additional chats
-                    ],
+                        )
+                      ],
+                    ),
                   ),
-                  )
                 ),
               ],
             ),
-            // The search button, now correctly positioned inside the Stack
             Positioned(
               bottom: 10,
               right: 30,
-              child: FloatingActionButton( // A more suitable widget for a floating action button
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('New Chat'),
-                        content: const Text('Start a new chat!'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: const Text('Close'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
+              child: FloatingActionButton(
+                // 6. Call the methods to fetch contacts and then show the dialog
+                onPressed: _showPermissionExplanationDialog,
                 backgroundColor: const Color.fromARGB(255, 12, 20, 23),
-                child: const Icon(Icons.chat_bubble_outline_rounded, color: Colors.greenAccent),
+                child: const Icon(Icons.chat_bubble_outline_rounded,
+                    color: Colors.greenAccent),
               ),
             ),
           ],

@@ -8,6 +8,7 @@ class Login extends StatelessWidget {
 
   String _email= '';
   String _password= '';
+  final width = WidgetsBinding.instance.window.physicalSize.width / WidgetsBinding.instance.window.devicePixelRatio;
 
   void _validateUser(BuildContext context) async{
    if(_formKey.currentState!.validate()){
@@ -174,14 +175,28 @@ class Login extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.transparent,
                 shadowColor: Colors.transparent,
-                textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                textStyle: TextStyle(fontSize: (width > 600) ? 18 : 12, fontWeight: FontWeight.bold),
               
               ),
 
+
               onPressed: () {
                 Navigator.of(context).pushReplacementNamed('/getStarted');              },
-              child: Text("New Here ??, Sign Up", style: TextStyle(color: Colors.white)),
+              child: Text("Don't have an Account? Sign Up", style: TextStyle(color: Colors.white)),
             ),
+            const SizedBox(height: 20),
+
+          MaterialButton(onPressed:  () {
+            Navigator.of(context).pushReplacementNamed('/loginPhone');
+          },
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+          
+          child: Text("Wanna Use Phone Number ??", style: TextStyle(color: Colors.black, fontSize: 16),),
+          )
           ]
           )
       ),
