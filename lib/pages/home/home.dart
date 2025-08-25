@@ -1,5 +1,4 @@
  import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 
 // 1. Convert to a StatefulWidget to manage the state of the contacts list
@@ -202,64 +201,55 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text(
-          'ChatX',
-          style: TextStyle(
-            color: Colors.white,
-            fontFamily: 'EduNSWACTCursive',
-            fontSize: 23,
-            fontWeight: FontWeight.bold,
+      return Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: const Text(
+            'ChatX',
+            style: TextStyle(
+              color: Colors.white, // Text: Warm Yellow
+              fontFamily: 'EduNSWACTCursive',
+              fontSize: 23,
+              fontWeight: FontWeight.bold,
+            ),
           ),
+          backgroundColor: Color(0xFFA67B00), // Primary: Dark Yellow
+          elevation: 2,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.settings, color:Colors.white), // Accent: Light Amber
+              onPressed: () {
+                Navigator.pushNamed(context, '/login');
+              },
+            ),
+          ],
         ),
-        backgroundColor: const Color.fromARGB(255, 12, 20, 23),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings, color: Colors.white),
-            onPressed: () {
-              Navigator.pushNamed(context, '/login');
-            },
+        bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Color(0xFF1E1E1E), // Background: Dark Gray-Black
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat, color: Color(0xFFFFC107)), // Secondary: Amber
+              label: 'Chats',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.notifications, color: Color(0xFFFFC107)),
+              label: 'Status',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.group, color: Color(0xFFFFC107)),
+              label: 'Communities',
+            ),
+          ],
+          unselectedItemColor: Color(0xFFFFD54F), // Text: Warm Yellow
+          unselectedLabelStyle: TextStyle(
+            fontSize: 12,
+            color: Color(0xFFFFD54F),
           ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color.fromARGB(255, 12, 20, 23),
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat, color: Colors.white),
-            label: 'Chats',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications, color: Colors.white),
-            label: 'Status',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group, color: Colors.white),
-            label: 'Communities',
-          ),
-        ],
-        unselectedItemColor: Colors.white60,
-        unselectedLabelStyle: const TextStyle(
-          fontSize: 12,
-          color: Colors.white60,
+          selectedItemColor: Color(0xFFA67B00), // Primary: Dark Yellow
         ),
-        selectedItemColor: Colors.yellow,
-      ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color.fromARGB(255, 0, 61, 1),
-              Colors.black,
-              Color.fromARGB(255, 83, 75, 0)
-            ],
-            begin: Alignment.bottomRight,
-            end: Alignment.topLeft,
-          ),
-        ),
-        child: Stack(
+        body: Container(
+          color: Color(0xFF1E1E1E), // Background: Dark Gray-Black
+          child: Stack(
           children: [
             Column(
               children: [
@@ -269,21 +259,21 @@ class _HomeState extends State<Home> {
                   child: Form(
                     key: _formKey,
                     child: TextFormField(
-                      style: const TextStyle(color: Colors.greenAccent),
-                      cursorColor: Colors.greenAccent,
+                      style: const TextStyle(color: Color(0xFFFFD54F)), // Text: Warm Yellow
+                      cursorColor: Color(0xFFFFD54F),
                       decoration: InputDecoration(
                         hintText: 'Search Name/Number.....',
-                        hintStyle: const TextStyle(color: Colors.white54),
+                        hintStyle: const TextStyle(color: Color(0xFFFFCA28)), // Accent: Light Amber
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
                           borderSide: BorderSide.none,
                         ),
                         prefixIcon: const Icon(
                           Icons.search,
-                          color: Colors.greenAccent,
+                          color: Color(0xFFA67B00), // Primary: Dark Yellow
                         ),
                         filled: true,
-                        fillColor: const Color.fromARGB(255, 12, 20, 23),
+                        fillColor: Color(0xFF1E1E1E), // Background: Dark Gray-Black
                         contentPadding: const EdgeInsets.symmetric(
                             horizontal: 30, vertical: 15),
                       ),
@@ -299,37 +289,37 @@ class _HomeState extends State<Home> {
                       children: [
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.5),
+                            color: Color(0xFFA67B00).withOpacity(0.08), // Primary: Dark Yellow
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: ListTile(
                             title: const Text('Alex',
                                 style: TextStyle(
-                                    color: Colors.white,
+                                    color: Color(0xFFFFD54F), // Text: Warm Yellow
                                     fontWeight: FontWeight.bold)),
                             leading: const CircleAvatar(
-                              backgroundColor: Colors.black,
+                              backgroundColor: Color(0xFFFFC107), // Secondary: Amber
                               child: Text(
                                 'A',
                                 style: TextStyle(
-                                    color: Colors.greenAccent,
+                                    color: Color(0xFF1E1E1E), // Background: Dark Gray-Black
                                     fontWeight: FontWeight.bold),
                               ),
                             ),
                             trailing: const CircleAvatar(
-                              backgroundColor: Colors.greenAccent,
+                              backgroundColor: Color(0xFFA67B00), // Primary: Dark Yellow
                               radius: 12,
                               child: Center(
                                   child: Text(
                                 '1',
                                 style: TextStyle(
-                                    color: Colors.black,
+                                    color: Color(0xFFFFCA28), // Accent: Light Amber
                                     fontWeight: FontWeight.bold,
                                     fontSize: 12),
                               )),
                             ),
                             subtitle: const Text('Hey There',
-                                style: TextStyle(color: Colors.white54)),
+                                style: TextStyle(color: Color(0xFFFFCA28))), // Accent: Light Amber
                             onTap: () {
                               Navigator.pushNamed(context, '/chat');
                             },
@@ -345,11 +335,10 @@ class _HomeState extends State<Home> {
               bottom: 10,
               right: 30,
               child: FloatingActionButton(
-                // 6. Call the methods to fetch contacts and then show the dialog
                 onPressed: _showPermissionExplanationDialog,
-                backgroundColor: const Color.fromARGB(255, 12, 20, 23),
+                backgroundColor: Color(0xFFFFC107), // Secondary: Amber
                 child: const Icon(Icons.chat_bubble_outline_rounded,
-                    color: Colors.greenAccent),
+                    color: Color(0xFF1E1E1E)), // Text: Warm Yellow
               ),
             ),
           ],

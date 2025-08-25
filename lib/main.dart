@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:wassup/pages/auth/loginPhone.dart';
-import 'package:wassup/pages/auth/registerPhone.dart';
 import 'package:wassup/pages/chat/chatArea.dart';
 import 'package:wassup/pages/home/home.dart';
 import 'package:wassup/pages/landing.dart';
 import 'package:wassup/pages/auth/login.dart';
 import 'package:wassup/pages/auth/register.dart';
+import 'package:wassup/pages/auth/loginPhone.dart';
+import 'package:wassup/pages/auth/registerPhone.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 
