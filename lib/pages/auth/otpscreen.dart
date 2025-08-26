@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:wassup/pages/home/home.dart';
 
 class OtpScreen extends StatefulWidget {
   String verificationId;

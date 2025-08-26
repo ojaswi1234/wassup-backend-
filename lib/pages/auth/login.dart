@@ -167,7 +167,7 @@ class Login extends StatelessWidget {
                     child: Text("Don't have an Account? Sign Up", style: TextStyle(color: kTextColor)),
                   ),
                   const SizedBox(height: 20),
-                  MaterialButton(
+                 /*  MaterialButton(
                     onPressed: () {
                       Navigator.of(context).pushReplacementNamed('/loginPhone');
                     },
@@ -177,7 +177,7 @@ class Login extends StatelessWidget {
                     ),
                     padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
                     child: Text("Use Phone Number Instead", style: TextStyle(color: kBackgroundColor, fontSize: 16)),
-                  )
+                  )*/
                 ],
               ),
             ),

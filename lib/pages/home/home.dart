@@ -49,6 +49,13 @@ class _HomeState extends State<Home> {
     }
   }
 
+  void _createChatWithContact(Contact contact) {
+    // Implement chat creation logic here
+    print("Creating chat with ${contact.displayName}");
+    Navigator.of(context).pop(); // Close the dialog after selecting a contact
+    // Navigate to chat screen or perform other actions as needed
+  }
+
   // 4. Show the dialog with the fetched contacts
   void _showContactFlowDialog() {
     showDialog(
@@ -86,8 +93,8 @@ class _HomeState extends State<Home> {
                                     ? contact.phones.first.number
                                     : 'No phone number'),
                                 onTap: () {
-                                  print('Selected: ${contact.displayName}');
-                                  Navigator.of(context).pop();
+                                _createChatWithContact(contact);
+                              
                                 },
                               );
                             },
@@ -216,13 +223,24 @@ class _HomeState extends State<Home> {
           backgroundColor: Color(0xFFA67B00), // Primary: Dark Yellow
           elevation: 2,
           actions: [
-            IconButton(
-              icon: const Icon(Icons.settings, color:Colors.white), // Accent: Light Amber
-              onPressed: () {
-                Navigator.pushNamed(context, '/login');
-              },
-            ),
+            PopupMenuButton(color: Colors.black ,icon: const Icon(Icons.settings, color: Colors.white),itemBuilder: (context ) => [
+              const PopupMenuItem(
+                value: 'new_group',
+                child: Text('New Group', style: TextStyle(color: Color(0xFFFFD54F))), // Text: Warm Yellow
+              ),
+              const PopupMenuItem(
+                value: 'settings',
+                child: Text('Settings', style: TextStyle(color: Color(0xFFFFD54F))),
+              ),
+              const PopupMenuItem(
+                value: 'logout',
+
+                child: Text('Logout', style: TextStyle(color: Color(0xFFFFD54F))),
+              ),
+            ],
+          ) ,
           ],
+           // Text: Warm Yellow
         ),
         bottomNavigationBar: BottomNavigationBar(
           backgroundColor: Color(0xFF1E1E1E), // Background: Dark Gray-Black

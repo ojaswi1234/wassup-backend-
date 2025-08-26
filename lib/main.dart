@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:wassup/pages/auth/profile.dart';
 import 'package:wassup/pages/chat/chatArea.dart';
 import 'package:wassup/pages/home/home.dart';
 import 'package:wassup/pages/landing.dart';
@@ -43,6 +44,7 @@ class MainApp extends StatelessWidget {
        '/chat' : (context) => ChatArea(),
        '/registerPhone' : (context) => RegisterPhone(),
        '/loginPhone' : (context) => LoginPhone(),
+       '/profile' : (context) => Profile(),
      },
     );
   

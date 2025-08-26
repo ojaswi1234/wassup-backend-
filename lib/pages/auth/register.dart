@@ -162,7 +162,7 @@ class Register extends StatelessWidget {
                     child: Text("Already have an account? Click here to login", style: TextStyle(color: kTextColor)),
                   ),
                   const SizedBox(height: 20),
-                  MaterialButton(
+                 /* MaterialButton(
                     onPressed: () {
                       Navigator.of(context).pushReplacementNamed('/registerPhone');
                     },
@@ -172,7 +172,7 @@ class Register extends StatelessWidget {
                     ),
                     padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
                     child: Text("Use Phone Number Instead", style: TextStyle(color: kBackgroundColor, fontSize: 16)),
-                  )
+                  )*/
                 ],
               ),
             ),
