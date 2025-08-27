@@ -34,5 +34,16 @@
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>
+  <script src="socket.io.js"></script>
+  <script src="./server.js"></script>
+  <script>
+    const socket = io('http://localhost:3000');
+    socket.on('connect', () => {
+      console.log('Connected to server');
+    });
+    socket.on('message', (msg) => {
+      console.log('New message:', msg);
+    });
+  </script>
 </body>
 </html>

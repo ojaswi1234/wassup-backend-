@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart' as io;
+import 'package:logger/logger.dart';
 
 // Theme colors
 const kPrimaryColor = Color(0xFFA67B00); // Dark Yellow
@@ -14,9 +15,57 @@ class ChatArea extends StatefulWidget {
   @override
   State<ChatArea> createState() => _ChatAreaState();
 }
-int port = 56873;
 class _ChatAreaState extends State<ChatArea> {
- 
+  io.Socket? socket;
+  
+
+ TextEditingController controller = TextEditingController();
+ List<Chat> messages = [];
+ @override
+ void initState() {
+   super.initState();
+   socket = io.io('http://192.168.1.11:3000',
+   io.OptionBuilder()
+    .setTransports(['websocket']) // for Flutter or Dart VM
+    .enableAutoConnect()
+    .build(),
+   );
+   setupListeners();
+ }
+
+
+@override
+ void dispose(){
+  socket?.close();
+  super.dispose();
+ }
+
+ void setupListeners(){
+  socket?.on('connect', (_) {
+   Logger().i('socket connected');
+  });
+  socket?.on('disconnect', (_) {
+   Logger().e('socket disconnected');
+  });
+
+  socket?.on('message', (data) {
+    setState(() {
+      messages.add(Chat.fromJSON(data));
+    });
+  });
+ }
+
+ void sendChat(){
+  if(controller.text.isNotEmpty){
+    final chat = Chat(
+      message: controller.text,
+      timestamp: DateTime.now(),
+    );
+    socket?.emit('message', chat.toJSON());
+    controller.clear();
+  }
+ }
+
 
   final List<String> actionList = [
     "Img",
@@ -35,7 +84,8 @@ class _ChatAreaState extends State<ChatArea> {
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
-      TextEditingController controller = TextEditingController();
+      
+
 
     return Scaffold(
       appBar: AppBar(
@@ -138,14 +188,49 @@ class _ChatAreaState extends State<ChatArea> {
         height: double.infinity,
         padding: EdgeInsets.only(bottom: (width < 600 ? 32 : 0)),
         color: kBackgroundColor,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
+        child: Column(
+          children: [
+            // Messages display area
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.all(16.0),
+                itemCount: messages.length,
+                itemBuilder: (context, index) {
+                  final message = messages[index];
+                  return Container(
+                    margin: const EdgeInsets.symmetric(vertical: 4.0),
+                    
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12.0),
+                          decoration: BoxDecoration(
+                      color: kPrimaryColor,
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                        child:Text(
+                          message.message,
+                          style: TextStyle(color: Colors.white, fontSize: 16, ),
+                        )),
+                        SizedBox(height: 4),
+                        Text(
+                          '${message.timestamp.hour}:${message.timestamp.minute.toString().padLeft(2, '0') } am',
+                          style: TextStyle(color: Colors.white70, fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+            // Input area
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
 
                 Expanded(
                   child: Form(
@@ -187,7 +272,7 @@ class _ChatAreaState extends State<ChatArea> {
                             );
                           }).toList(),
                           onSelected: (value) {
-                            print(value);
+                            debugPrint(value);
                           },
                         ),
                       ),
@@ -197,7 +282,7 @@ class _ChatAreaState extends State<ChatArea> {
                 const SizedBox(width: 8.0),
                 ElevatedButton(
                   onPressed: () {
-                    controller.clear();
+                    sendChat();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: kSecondaryColor,
@@ -215,9 +300,32 @@ class _ChatAreaState extends State<ChatArea> {
                 ),
               ],
             ),
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
+}
+
+class Chat {
+  final String message;
+ 
+  final DateTime timestamp;
+
+  Chat({
+    required this.message,
+   
+    required this.timestamp,
+  });
+
+   factory Chat.fromJSON(Map<String, dynamic> json) => Chat(
+      message: json['message'] as String,
+      timestamp: DateTime.parse(json['timestamp'] as String),
+    );
+
+    Map<String, dynamic> toJSON() => {
+      'message': message,
+      'timestamp': timestamp.toIso8601String(),
+    };
 }

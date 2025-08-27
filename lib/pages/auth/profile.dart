@@ -10,7 +10,23 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Scaffold(
+      appBar: AppBar(
+        title:   Text(
+                'Wassup ??',
+                style: TextStyle(color: Colors.white, fontSize: 24, decoration: TextDecoration.none),
+              ),
+        centerTitle: true,
+        
+        backgroundColor: Color(0xFF1E1E1E),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+    body: Container(
       decoration: BoxDecoration(
         color: Colors.yellow,
       ),
@@ -29,10 +45,7 @@ class _ProfileState extends State<Profile> {
           physics: BouncingScrollPhysics(),
           child: Column(
             children: [
-              Text(
-                'Wassup ??',
-                style: TextStyle(color: Colors.white, fontSize: 24, decoration: TextDecoration.none),
-              ),
+            
               const SizedBox(height: 20),
               CircleAvatar(
                 radius: 60,
@@ -44,7 +57,7 @@ class _ProfileState extends State<Profile> {
       )
       )
       )
+    )
     );
-    
   }
 }
